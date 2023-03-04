@@ -9,13 +9,8 @@ export class TodosController {
     @Post()
     async addTodo(
         @Body('title') todoTitle: string,
-        @Body('description') todoDescription: string,
-        @Body('status') todoStatus: string,
-        @Body('done') todoDone: boolean,
     ) {
-        const generatedId = await this.todosService.insertTodo(
-            todoTitle, todoDescription, todoStatus, todoDone
-        );
+        const generatedId = await this.todosService.insertTodo(todoTitle);
         return generatedId;
     }
 
@@ -33,11 +28,10 @@ export class TodosController {
     async updateTodo(
         @Param('id') todoId: string,
         @Body('title') todoTitle: string,
-        @Body('description') todoDescription: string,
         @Body('done') todoDone: boolean,
     ) {
         await this.todosService.updateTodo(
-            todoId, todoTitle, todoDescription, todoDone
+            todoId, todoTitle, todoDone
         );
         return null;
     }
