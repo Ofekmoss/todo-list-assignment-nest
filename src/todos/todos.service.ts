@@ -19,12 +19,11 @@ export class TodosService {
         };
     }
 
-    async getTodos() {
+    async getActiveTodos() {
         const todos = await this.todoModel.find({status: TodosConstants.ACTIVE}).sort({done: 1}).exec();
         return todos.map(todo => ({
             id: todo.id,
             title: todo.title,
-            description: todo.description,
             status: todo.status,
             done: todo.done,
         }))
@@ -35,7 +34,6 @@ export class TodosService {
         return {
             id: todo.id,
             title: todo.title,
-            description: todo.description,
             status: todo.status,
             done: todo.done,
         }
@@ -49,18 +47,16 @@ export class TodosService {
     }
 
     async deleteTodo(todoId: string) {
-        await this.todoModel.findByIdAndUpdate(todoId, {status: "deleted"}).exec();
+        let todo = await this.todoModel.findByIdAndUpdate(todoId, {status: TodosConstants.DELETED}).exec();
+        if (!todo) {
+            throw new NotFoundException(TodosConstants.NOT_FOUND_ERROR);
+        }
     }
 
     private async findTodo(id: string): Promise<Todo> {
-        let todo;
-        try {
-            todo = await this.todoModel.findById(id).exec();
-        } catch (err) {
-            throw new NotFoundException('Could not find todo.');
-        }
+        let todo = await this.todoModel.findById(id).exec();
         if (!todo) {
-            throw new NotFoundException('Could not find todo.');
+            throw new NotFoundException(TodosConstants.NOT_FOUND_ERROR);
         }
         return todo;
     }

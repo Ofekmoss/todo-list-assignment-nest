@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import { WebSocketServer } from '@nestjs/websockets';
-import { MessageBody, SubscribeMessage } from '@nestjs/websockets/decorators';
-import { Server } from 'socket.io';
+import { CreateTodoDto } from 'src/validation/createTodoDto.validation';
+import { FindOneParams } from 'src/validation/FindOneParams.validation';
+import { UpdateTodoDto } from 'src/validation/updateTodoDto.validation';
 import { TodosService } from './todos.service';
 
 @Controller('todos')
@@ -11,38 +11,35 @@ export class TodosController {
 
     @Post()
     async addTodo(
-        @Body('title') todoTitle: string,
+        @Body() createTodoDto: CreateTodoDto,
     ) {
-        const generatedId = await this.todosService.insertTodo(todoTitle);
+        const generatedId = await this.todosService.insertTodo(createTodoDto.title);
         return generatedId;
     }
 
     @Get()
     async getAllTodos() {
-        return await this.todosService.getTodos();
+        return await this.todosService.getActiveTodos();
     }
 
     @Get(':id')
-    async getTodo(@Param('id') todoId: string) {
-        return await this.todosService.getSingleTodo(todoId);
+    async getTodo(@Param() params: FindOneParams) {
+        return await this.todosService.getSingleTodo(params.id);
     }
 
     @Put(':id')
     async updateTodo(
-        @Param('id') todoId: string,
-        @Body('title') todoTitle: string,
-        @Body('done') todoDone: boolean,
+        @Param() params: FindOneParams,
+        @Body() updateTodoDto: UpdateTodoDto,
     ) {
         await this.todosService.updateTodo(
-            todoId, todoTitle, todoDone
+            params.id, updateTodoDto.title, updateTodoDto.done
         );
-        return null;
     }
 
     @Delete(':id')
-    async removeTodo(@Param('id') todoId: string) {
-        await this.todosService.deleteTodo(todoId);
-        return null;
+    async removeTodo(@Param() params: FindOneParams) {
+        await this.todosService.deleteTodo(params.id);
     }
 
 }
