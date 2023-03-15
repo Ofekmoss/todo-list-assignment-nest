@@ -10,7 +10,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Todos Crud')
-    .setDescription('Sense Pass home assignment')
+    .setDescription('To do list assignment')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
